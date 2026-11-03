@@ -30,7 +30,7 @@
 ---
 
 ## 📑 Daftar Isi
-1. [Ikhtisar Arsitektur](#-ikhtisar-arsitektur)
+1. [Alur Pembayaran dan Validasi](#-alur-pembayaran-dan-validasi)
 2. [⚠️ MENGAPA YURIPAY TIDAK BISA DI-DEPLOY DI VERCEL / SERVERLESS?](#-mengapa-yuripay-tidak-bisa-di-deploy-di-vercel--serverless)
 3. [Fitur Utama Enterprise](#-fitur-utama-enterprise)
 4. [Arsitektur Keamanan Dual-Port](#-arsitektur-keamanan-dual-port)
@@ -45,45 +45,11 @@
 
 ---
 
-## 🏛️ Ikhtisar Arsitektur
+## Alur Pembayaran dan Validasi
 
-**YURIPAY by myzert** menjembatani akun merchant **GoBiz** reguler menjadi payment gateway QRIS dinamis mandiri (*on-premise / self-hosted*) yang mampu memproses tagihan secara otomatis dalam hitungan detik tanpa biaya potongan gateway pihak ketiga (0% gateway fee).
+**YURIPAY** menjembatani akun merchant **GoBiz/GoFood** reguler menjadi payment gateway mandiri (*self-hosted*) yang mampu memproses tagihan secara otomatis dalam hitungan detik tanpa biaya potongan gateway pihak ketiga (0% gateway fee).
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 ALUR TRANSAKSI YURIPAY                                 │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-
-  [ Pelanggan Toko ]                                            [ Merchant Server / Store ]
-          │                                                                  │
-          │ 1. Buat Tagihan (POST /api/create-payment)                       │
-          │◄─────────────────────────────────────────────────────────────────┤
-          │                                                                  │
-          ▼                                                                  │
-  [ Halaman Checkout (/pay/:id) ]                                            │
-  • QRIS Dinamis Otomatis                                                    │
-  • Nominal Unik (+1 Perak)                                                  │
-  • Mode: Default Chime / Anime                                              │
-          │                                                                  │
-          │ 2. Pembayaran via Bank / E-Wallet (BCA, GoPay, DANA, dll.)        │
-          ▼                                                                  │
-  [ GoPay / GoBiz Network ]                                                  │
-          │                                                                  │
-          │ 3. Settlement Masuk ke Rekening GoBiz                            │
-          ▼                                                                  │
-  [ YuriPay Background Daemon (Port 3000 & 3001) ]                           │
-  • Poller Realtime (Setiap 2.5 Detik)                                       │
-  • Pencocokan Presisi Nominal Unik & Timestamp                              │
-  • Update Status SQLite -> LUNAS • TERVERIFIKASI                            │
-          │                                                                  │
-          ├─────────────────────────────────────────────────────────────────►│
-          │ 4. Webhook HTTP POST (Midtrans SHA-512)                          │
-          │                                                                  ▼
-          │                                                      [ Pesanan Diproses Toko ]
-          │ 5. Auto OP Redirect ke Website Toko                              │
-          ▼                                                                  │
-  [ Toko Selesai (https://tokosaya.com/finish?order_id=...&status_code=200) ]│
-```
+<img src="assets/flow.png" alt="YuriPay Flow Diagram" width="100%" style="border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-height: 300px;" />
 
 ---
 
