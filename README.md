@@ -29,15 +29,13 @@
 1. [Alur Pembayaran dan Validasi](#alur-pembayaran-dan-validasi)
 2. [Persiapan](#persiapan)
 3. [Deployment](#deployment)
-4. [⚠️ MENGAPA YURIPAY TIDAK BISA DI-DEPLOY DI VERCEL / SERVERLESS?](#-mengapa-yuripay-tidak-bisa-di-deploy-di-vercel--serverless)
-5. [Fitur Utama Enterprise](#-fitur-utama-enterprise)
-6. [Arsitektur Keamanan Dual-Port](#-arsitektur-keamanan-dual-port)
-7. [Kustomisasi Logo & Identitas Merchant](#-kustomisasi-logo--identitas-merchant)
-8. [Konfigurasi Environment (.env)](#-konfigurasi-environment-env)
-9. [Spesifikasi API & Integrasi Midtrans](#-spesifikasi-api--integrasi-midtrans)
-10. [Dokumentasi Swagger UI](#-dokumentasi-swagger-ui)
-11. [Pertanyaan Umum (FAQ)](#-pertanyaan-umum-faq)
-12. [Lisensi & Kontribusi](#-lisensi--kontribusi)
+4. [Fitur Utama Enterprise](#fitur-utama-enterprise)
+5. [Arsitektur Keamanan Dual-Port](#arsitektur-keamanan-dual-port)
+6. [Konfigurasi Environment (.env)](#konfigurasi-environment-env)
+7. [Spesifikasi API & Integrasi Midtrans](#-spesifikasi-api--integrasi-midtrans)
+8. [Dokumentasi Swagger UI](#-dokumentasi-swagger-ui)
+9. [Pertanyaan Umum (FAQ)](#-pertanyaan-umum-faq)
+10. [Lisensi & Hak Cipta](#-lisensi--hak-cipta)
 
 ## Alur Pembayaran dan Validasi
 
@@ -182,27 +180,7 @@ server {
 ```
 </details>
 
-## ⚠️ MENGAPA YURIPAY TIDAK BISA DI-DEPLOY DI VERCEL / SERVERLESS?
-
-> [!CAUTION]
-> **YuriPay dirancang secara fundamental sebagai DAEMON STATEFUL. YuriPay TIDAK DAPAT BERJALAN di Vercel, Netlify, Cloudflare Workers, AWS Lambda, atau platform Serverless sejenis.**
-
-Secara arsitektur perangkat lunak, sistem gateway membutuhkan empat pilar runtime yang tidak dimiliki lingkungan serverless:
-
-| Kebutuhan Sistem YuriPay | ❌ Platform Serverless (Vercel / Lambda) | ✔️ Lingkungan Stateful (VPS / cPanel / Docker) |
-| :--- | :--- | :--- |
-| **Realtime Daemon Poller** | **Container dibekukan (*frozen*)** seketika setelah respons HTTP selesai dikirim. Event loop berhenti total dan mutasi tidak akan pernah terverifikasi. | **Node.js Process berjalan 24/7**, memverifikasi mutasi GoPay setiap 2.5 detik secara non-blocking. |
-| **Penyimpanan SQLite WAL** | Filesystem bersifat **read-only dan sementara (*ephemeral*)**. Database terhapus otomatis saat instance mati (*scale-to-zero*). | Database SQLite tersimpan permanen pada disk POSIX dengan konkurensi tinggi (**Write-Ahead Logging**). |
-| **Arsitektur Dual-Port** | Hanya mendukung single-port HTTP router standar. | Membuka dua socket port terisolasi secara simultan (**Port 3000** Internal & **Port 3001** Publik). |
-| **In-Memory Mutex Lock** | Instance serverless di-spawn secara acak (multi-instans tanpa sinkronisasi memori), menyebabkan tabrakan kode unik. | Menjaga memori sesi aktif terpusat, menjamin offset +1 perak tidak bertabrakan antar pelanggan. |
-
-**Platform Deployment yang Didukung Penuh:**
-- **Linux VPS**: Ubuntu 20.04 / 22.04 / 24.04 LTS, Debian 11 / 12, AlmaLinux, Rocky Linux.
-- **cPanel Web Hosting**: Menggunakan fitur **Setup Node.js App** (CloudLinux / Phusion Passenger).
-- **Docker & Docker Compose**: Container mandiri dengan persistensi volume.
-- **Termux di Android**: Server mandiri hemat energi pada smartphone Android fisik.
-
-## 💎 Fitur Utama Enterprise
+## Fitur Utama Enterprise
 
 ### 1. 🧮 Algoritma Offset Kode Unik Presisi (+1 Perak)
 - **Pembelian Mikro (Rp 50 s/d < Rp 1.000)**: Dikenakan offset tetap **+Rp 1 perak** (contoh: Rp 50 &rarr; Rp 51, Rp 500 &rarr; Rp 501, Rp 75 &rarr; Rp 76) agar sangat hemat dan tepat.
@@ -251,7 +229,7 @@ https://tokosaya.com/finish?order_id=INV-9901&status_code=200&transaction_status
   $$\text{signature\_key} = \text{SHA512}(\text{order\_id} + \text{status\_code} + \text{gross\_amount} + \text{ServerKey})$$
 - Kompatibel langsung dengan modul penerima notifikasi Midtrans pada berbagai framework web.
 
-## 🏰 Arsitektur Keamanan Dual-Port
+## Arsitektur Keamanan Dual-Port
 
 YuriPay memisahkan lalu lintas jaringan menjadi dua zona keamanan terisolasi:
 
@@ -272,7 +250,7 @@ YuriPay memisahkan lalu lintas jaringan menjadi dua zona keamanan terisolasi:
 └────────────────────────────┘                        └────────────────────────────┘
 ```
 
-## ⚙️ Konfigurasi Environment (.env)
+## Konfigurasi Environment (.env)
 
 | Variabel | Tipe | Wajib | Contoh / Default | Deskripsi |
 | :--- | :--- | :--- | :--- | :--- |
