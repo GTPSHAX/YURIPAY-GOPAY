@@ -157,7 +157,7 @@ Banyak merchant menggunakan hosting cPanel dengan fitur CloudLinux Node.js Selec
 
 1. **Masuk ke cPanel** &rarr; Buka menu **Setup Node.js App**.
 2. Klik tombol **Create Application**:
-   - **Node.js version**: Pilih versi `18.x`, `20.x`, atau `22.x`.
+   - **Node.js version**: Pilih versi `22.x`.
    - **Application mode**: Pilih `Production`.
    - **Application root**: Isi nama folder, misalnya `yuripay`.
    - **Application startup file**: Isi `server.js`.

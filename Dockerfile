@@ -6,7 +6,7 @@
 # dan SQLite WAL persistence. Docker memastikan proses berjalan stabil 24/7.
 # ==============================================================================
 
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 # Install build tools for native modules (better-sqlite3)
 RUN apk add --no-cache python3 make g++ sqlite
